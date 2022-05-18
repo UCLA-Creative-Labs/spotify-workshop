@@ -28,6 +28,24 @@ export default function Home() {
     setTopSongs(newTopSongs);
   }
 
+  const getTopSongs4Weeks = async () => {
+    const response = await fetch('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=50')
+    const data = await response.json()
+    setTopSongs(data.items)
+  }
+
+  const getTopSongs6Months = async () => {
+    const response = await fetch('https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=50')
+    const data = await response.json()
+    setTopSongs(data.items)
+  }
+
+  const getTopSongsAllTime = async () => {
+    const response = await fetch('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50')
+    const data = await response.json()
+    setTopSongs(data.items)
+  }
+
   const generateGuesses = () => {
     const answer = topSongs[curGuess];
 
@@ -68,15 +86,16 @@ export default function Home() {
         </list>
 
         <div className={styles.grid}>
-          <div className={`${styles.card} ${styles.btn}`}>
+          <div className={`${styles.card} ${styles.btn}`} onClick={() => getTopSongs4Weeks()}>
             <h2>Last 4 Weeks</h2>
+
           </div>
 
-          <div className={`${styles.card} ${styles.btn}`}>
+          <div className={`${styles.card} ${styles.btn}`} onClick={() => getTopSongs6Months()}>
             <h2>Last 6 months</h2>
           </div>
 
-          <div className={`${styles.card} ${styles.btn}`}>
+          <div className={`${styles.card} ${styles.btn}`} onClick={() => getTopSongsAllTime()}>
             <h2>All Time</h2>
           </div>
         </div>

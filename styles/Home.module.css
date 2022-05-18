@@ -85,6 +85,10 @@
   max-width: 300px;
 }
 
+.btn {
+  cursor: pointer;
+}
+
 .card:hover,
 .card:focus,
 .card:active {

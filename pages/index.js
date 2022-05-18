@@ -5,7 +5,14 @@ import {useState, useEffect} from 'react'
 
 export default function Home() {
 
-  const [test, setTest] = useState(0);
+  const [topSongs, setTopSongs] = useState([]);
+  const [curGuess, setCurGuess] = useState(0);
+
+  const showTopSongs = () => {
+    return topSongs.map(song => 
+      <li key={song}>{song}</li>  
+    )
+  }
   return (
     <div className={styles.container}>
       <main className={styles.main}>
@@ -13,8 +20,18 @@ export default function Home() {
           Spotify Stats
         </h1>
 
-        <div>{test}</div>
-        <button onClick={() => setTest(test+1)}>click me</button>
+        <div>{curGuess}</div>
+        <button onClick={() => setCurGuess(curGuess+1)}>click me</button>
+
+        <button onClick={() => setTopSongs(['blah','trevrawr'])}>click me too!</button>
+
+        <div className={`${styles.card} ${styles.btn}`}>
+          <h2>Login with Spotify</h2>
+        </div>
+
+        <list>
+          {showTopSongs}
+        </list>
 
         <div className={styles.grid}>
           <div className={`${styles.card} ${styles.btn}`}>

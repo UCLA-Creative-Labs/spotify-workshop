@@ -6,22 +6,19 @@ import { Router, useRouter } from 'next/router';
 import querystring from 'querystring'
 import { generateChallenge } from '../utils/pkce';
 
-// const CLIENT_ID = process.env.CLIENT_ID;
-// const CLIENT_SECRET = process.env.CLIENT_SECRET;
-
 const CLIENT_ID = '8887d21cdd694dacb146d301968d58ff';
-const CLIENT_SECRET = '2e02c630460a4221adc03b494f85e3b0';
 
 const CALLBACK_URL = 'http://localhost:3000';
 const SPOTIFY_CODE_VERIFIER = "spotify-code-verifier";
 
-export default function Home(props) {
+export default function Home() {
 
   const NUMSONGS = 50
 
   const [loggedIn, setLoggedIn] = useState(false);
   const [authCode, setAuthCode] = useState();
   const [accessToken, setAccessToken] = useState();
+  const [refreshToken, setRefreshToken] = useState();
   const [revealed, setRevealed] = useState([]);
   const [topSongs, setTopSongs] = useState([]);
   const [curGuess, setCurGuess] = useState(0);
@@ -55,24 +52,6 @@ export default function Home(props) {
 
     setRevealed(newRevealed);
     setTopSongs(newTopSongs);
-  }
-
-  const getTopSongs4Weeks = async () => {
-    const response = await fetch('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=50')
-    const data = await response.json()
-    setTopSongs(data.items)
-  }
-
-  const getTopSongs6Months = async () => {
-    const response = await fetch('https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=50')
-    const data = await response.json()
-    setTopSongs(data.items)
-  }
-
-  const getTopSongsAllTime = async () => {
-    const response = await fetch('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50')
-    const data = await response.json()
-    setTopSongs(data.items)
   }
 
   const generateGuesses = (curGuessNum) => {
@@ -148,24 +127,20 @@ export default function Home(props) {
         scope: 'user-top-read',
         redirect_uri: CALLBACK_URL,
         show_dailog: true,
-        code_challenge_method: 'SHA256',
+        code_challenge_method: 'S256',
         code_challenge
       });
     void router.push(authenticationUrl);
   }
 
   const getAccessToken = async () => {
-    console.log("inside get access token");
-    const buffer = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`);
-    const authHeader = buffer.toString('base64');
     const code_verifier = window.localStorage.getItem(SPOTIFY_CODE_VERIFIER);
 
     if (!code_verifier) return;
-    
-    const res = await window.fetch('https://api.spotify.com/v1/api/token', {
+
+    const res = await window.fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
-        // Authorization: `Basic ${authHeader}`,
         'Content-Type': 'application/x-www-form-urlencoded;',
       },
       body: querystring.stringify({
@@ -177,8 +152,32 @@ export default function Home(props) {
       })
     });
 
-    const body = res.json();
+    const body = await res.json();
     setAccessToken(body.access_token);
+    setRefreshToken(body.refresh_token);
+  }
+
+  const Duration = {
+    SHORT_TERM: 'short_term',
+    MEDIUM_TERM: 'medium_term',
+    LONG_TERM: 'long_term'
+  };
+  Object.freeze(Duration);
+
+  const fetchTopSongs = async (duration) => {
+    const response = await window.fetch('https://api.spotify.com/v1/me/top/tracks?' +
+      querystring.stringify({
+        limit: 50,
+        offset: 0,
+        time_range: duration
+      }), {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+      },
+    });
+    const data = await response.json()
+    setTopSongs(data.items.map(song => song.name))
   }
 
   return (
@@ -195,16 +194,16 @@ export default function Home(props) {
             <button onClick={() => generateGuesses(curGuess)}>Generate Guesses</button>
 
             <div className={styles.grid}>
-              <div className={`${styles.card} ${styles.btn}`} onClick={() => { getTopSongs4Weeks(); generateGuesses(); }}>
+              <div className={`${styles.card} ${styles.btn}`} onClick={() => { fetchTopSongs(Duration.SHORT_TERM); generateGuesses(); }}>
                 <h2>Last 4 Weeks</h2>
 
               </div>
 
-              <div className={`${styles.card} ${styles.btn}`} onClick={() => { getTopSongs6Months(); generateGuesses(); }}>
+              <div className={`${styles.card} ${styles.btn}`} onClick={() => { fetchTopSongs(Duration.MEDIUM_TERM); generateGuesses(); }}>
                 <h2>Last 6 months</h2>
               </div>
 
-              <div className={`${styles.card} ${styles.btn}`} onClick={() => { getTopSongsAllTime(); generateGuesses(); }}>
+              <div className={`${styles.card} ${styles.btn}`} onClick={() => { fetchTopSongs(Duration.LONG_TERM); generateGuesses(); }}>
                 <h2>All Time</h2>
               </div>
             </div>

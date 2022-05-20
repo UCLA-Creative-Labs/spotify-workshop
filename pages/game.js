@@ -6,6 +6,7 @@ export default function Game(props) {
   const [revealed, setRevealed] = useState([]);
   const [curGuess, setCurGuess] = useState(0);
   const [curSongs, setCurSongs] = useState([]);
+  const [totalGuesses, setTotalGuesses] = useState(0);
 
   const {topSongs} = props;
   const showTopSongs = topSongs.map((song, idx) =>
@@ -16,6 +17,7 @@ export default function Game(props) {
     setRevealed([]);
     setCurGuess(0);
     setCurSongs([]);
+    setTotalGuesses(0);
   }
 
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function Game(props) {
   } 
 
   const reveal = (guess) => {
+    setTotalGuesses(totalGuesses + 1);
     if (guess === topSongs[curGuess]) {
         const newRevealed = [...revealed]
         newRevealed[curGuess] = true;
@@ -82,6 +85,7 @@ export default function Game(props) {
                     )
                 }
             </div>
+            {totalGuesses > 0 && <h1>Correctness: {Math.round(curGuess / totalGuesses * 100)}&#x25;</h1>}
         </div>
     </div>
   )

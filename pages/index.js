@@ -215,47 +215,35 @@ export default function Home() {
 
         {/* Display songs */}
         {topSongs.length > 0 &&
-          <>
-            <list>
+          <div className={styles.grid}>
+            <ol className={styles.column}>
               {showTopSongs}
-              {topSongs}
-            </list>
+              {/* {topSongs} */}
+            </ol>
+            <div className={styles.column}>
+              <h1>Choose Your Next Top Song</h1>
+              <div className={styles.grid}>
 
-            <h1>Choose Your Next Top Song</h1>
-            <div className={styles.grid}>
+                <div onClick={() => reveal(curSongs[0])} className={`${styles.card} ${styles.btn}`}>
+                  <h2>{curSongs[0]}</h2>
+                </div>
 
-              <div onClick={() => reveal(curSongs[0])} className={`${styles.card} ${styles.btn}`}>
-                <h2>{curSongs[0]}</h2>
+                <div onClick={() => reveal(curSongs[1])} className={`${styles.card} ${styles.btn}`}>
+                  <h2>{curSongs[1]}</h2>
+                </div>
+
+                <div onClick={() => reveal(curSongs[2])} className={`${styles.card} ${styles.btn}`}>
+                  <h2>{curSongs[2]}</h2>
+                </div>
+
+                <div onClick={() => reveal(curSongs[3])} className={`${styles.card} ${styles.btn}`}>
+                  <h2>{curSongs[3]}</h2>
+                </div>
               </div>
-
-              <div onClick={() => reveal(curSongs[1])} className={`${styles.card} ${styles.btn}`}>
-                <h2>{curSongs[1]}</h2>
-              </div>
-
-              <div onClick={() => reveal(curSongs[2])} className={`${styles.card} ${styles.btn}`}>
-                <h2>{curSongs[2]}</h2>
-              </div>
-
-              <div onClick={() => reveal(curSongs[3])} className={`${styles.card} ${styles.btn}`}>
-                <h2>{curSongs[3]}</h2>
-              </div>
-            </div>
-          </>
+            </div> 
+          </div>
         }
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }

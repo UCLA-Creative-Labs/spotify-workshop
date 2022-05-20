@@ -67,7 +67,7 @@
 
 .grid {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   flex-wrap: wrap;
   max-width: 800px;
@@ -87,6 +87,22 @@
 
 .btn {
   cursor: pointer;
+}
+
+.column {
+  width: 50%;
+  height: 100vh;
+}
+
+.topSongs {
+  margin: 1rem;
+  padding: 1.5rem;
+  text-align: left;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  max-width: 300px;
+  border-color: #0070f3;
 }
 
 .card:hover,

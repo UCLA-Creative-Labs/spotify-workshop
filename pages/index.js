@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState, useEffect } from 'react'
@@ -12,13 +11,9 @@ const CALLBACK_URL = 'http://localhost:3000';
 const SPOTIFY_CODE_VERIFIER = "spotify-code-verifier";
 
 export default function Home() {
-
-  const NUMSONGS = 50
-
   const [loggedIn, setLoggedIn] = useState(false);
   const [authCode, setAuthCode] = useState();
   const [accessToken, setAccessToken] = useState();
-  const [refreshToken, setRefreshToken] = useState();
   const [revealed, setRevealed] = useState([]);
   const [topSongs, setTopSongs] = useState([]);
   const [curGuess, setCurGuess] = useState(0);
@@ -34,43 +29,28 @@ export default function Home() {
 
   const reset = () => {
     setRevealed([]);
-    setTopSongs([]);
     setCurGuess(0);
     setCurSongs([]);
   }
 
-  const initRandomData = () => {
-    const randomData = ['blah', 'trevrawr', 'minecraft', 'joseph', 'cube', 'hello'];
-    const newRevealed = [];
-    const newTopSongs = [];
-
-    randomData.forEach(item => {
-      newRevealed.push(false);
-      newTopSongs.push(item);
-    }
-    )
-
-    setRevealed(newRevealed);
-    setTopSongs(newTopSongs);
-  }
-
   const generateGuesses = (curGuessNum) => {
     const tempSongs = []
-    const answerIdx = getRandomInt(0, 4);
+    const size = Math.min(4, topSongs.length - curGuessNum)
+    const answerIdx = getRandomInt(0, size);
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < size; i++) {
       if (i === answerIdx) {
         tempSongs.push(topSongs[curGuessNum])
       }
       else {
-        const randomSong = topSongs[getRandomInt(curGuessNum + 1, topSongs.length)];
+        var randomSong;
+        do {
+          randomSong = topSongs[getRandomInt(curGuessNum + 1, topSongs.length)];
+        } while (tempSongs.includes(randomSong))
+
         tempSongs.push(randomSong)
       }
     }
-
-    console.log(curGuessNum)
-    console.log(tempSongs)
-    console.log(topSongs[curGuessNum])
 
     setCurSongs(tempSongs)
   }
@@ -91,6 +71,36 @@ export default function Home() {
     revealed[idx] ? <li key={idx}>{song}</li> : <li key={idx}>???</li>
   );
 
+  const getNumber = () => {
+    const i = curGuess + 1;
+    var phrase = i.toString();
+    switch (phrase) {
+      case '1':
+        phrase += 'st';
+        break;
+      case '2':
+        phrase += 'nd';
+        break;
+      case '3':
+        phrase += 'rd';
+        break;
+      default:
+        phrase += 'th';
+        break;
+    }
+    return phrase;
+  }
+
+  useEffect(() => {
+    reset();
+  }, [topSongs]);
+
+  useEffect(() => {
+    if (curSongs.length == 0 && topSongs.length > 0) {
+      generateGuesses(curGuess);
+    }
+  }, [curSongs, topSongs]);
+
   useEffect(() => {
     const token = window.localStorage.getItem("token");
     if (!token) {
@@ -104,7 +114,6 @@ export default function Home() {
     const code = router.query.code;
     if (!code) return;
     setAuthCode(code);
-    console.log("finished setting auth token");
   }, [router]);
 
   useEffect(() => {
@@ -189,21 +198,17 @@ export default function Home() {
 
         {loggedIn ?
           <>
-            <div>{curGuess}</div>
-            <button onClick={initRandomData}>click me too!</button>
-            <button onClick={() => generateGuesses(curGuess)}>Generate Guesses</button>
-
             <div className={styles.grid}>
-              <div className={`${styles.card} ${styles.btn}`} onClick={() => { fetchTopSongs(Duration.SHORT_TERM); generateGuesses(); }}>
+              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.SHORT_TERM)}>
                 <h2>Last 4 Weeks</h2>
 
               </div>
 
-              <div className={`${styles.card} ${styles.btn}`} onClick={() => { fetchTopSongs(Duration.MEDIUM_TERM); generateGuesses(); }}>
+              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.MEDIUM_TERM)}>
                 <h2>Last 6 months</h2>
               </div>
 
-              <div className={`${styles.card} ${styles.btn}`} onClick={() => { fetchTopSongs(Duration.LONG_TERM); generateGuesses(); }}>
+              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.LONG_TERM)}>
                 <h2>All Time</h2>
               </div>
             </div>
@@ -218,27 +223,19 @@ export default function Home() {
           <div className={styles.grid}>
             <ol className={styles.column}>
               {showTopSongs}
-              {/* {topSongs} */}
             </ol>
             <div className={styles.column}>
-              <h1>Choose Your Next Top Song</h1>
+              {curGuess < topSongs.length &&
+                <h1>Choose Your {getNumber()} Top Song</h1>
+              }
               <div className={styles.grid}>
-
-                <div onClick={() => reveal(curSongs[0])} className={`${styles.card} ${styles.btn}`}>
-                  <h2>{curSongs[0]}</h2>
-                </div>
-
-                <div onClick={() => reveal(curSongs[1])} className={`${styles.card} ${styles.btn}`}>
-                  <h2>{curSongs[1]}</h2>
-                </div>
-
-                <div onClick={() => reveal(curSongs[2])} className={`${styles.card} ${styles.btn}`}>
-                  <h2>{curSongs[2]}</h2>
-                </div>
-
-                <div onClick={() => reveal(curSongs[3])} className={`${styles.card} ${styles.btn}`}>
-                  <h2>{curSongs[3]}</h2>
-                </div>
+                {
+                curSongs.map((song, i) =>
+                  <div key={song + i} onClick={() => reveal(curSongs[i])} className={`${styles.card} ${styles.btn}`}>
+                    <h2>{song}</h2>
+                  </div>
+                  )
+                }
               </div>
             </div> 
           </div>

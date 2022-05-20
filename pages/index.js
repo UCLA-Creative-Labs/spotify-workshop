@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react'
 import {useRouter} from 'next/router';
 import querystring from 'querystring'
 import {generateChallenge} from '../utils/pkce';
-import {getNumber, getRandomInt} from './utils.js'
+import Game from './game';
 
 const CLIENT_ID = '8887d21cdd694dacb146d301968d58ff';
 const CALLBACK_URL = 'http://localhost:3000';
@@ -13,64 +13,9 @@ export default function Home() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [authCode, setAuthCode] = useState();
     const [accessToken, setAccessToken] = useState();
-    const [revealed, setRevealed] = useState([]);
     const [topSongs, setTopSongs] = useState([]);
-    const [curGuess, setCurGuess] = useState(0);
-    const [curSongs, setCurSongs] = useState([]);
 
     const router = useRouter();
-    const reset = () => {
-        setRevealed([]);
-        setCurGuess(0);
-        setCurSongs([]);
-    }
-
-    const generateGuesses = (curGuessNum) => {
-        const tempSongs = []
-        const size = Math.min(4, topSongs.length - curGuessNum)
-        const answerIdx = getRandomInt(0, size);
-
-        for (let i = 0; i < size; i++) {
-            if (i === answerIdx) {
-                tempSongs.push(topSongs[curGuessNum])
-            }
-            else {
-                var randomSong;
-                do {
-                    randomSong = topSongs[getRandomInt(curGuessNum + 1, topSongs.length)];
-                } while (tempSongs.includes(randomSong))
-
-                tempSongs.push(randomSong)
-            }
-        }
-
-        setCurSongs(tempSongs)
-    }
-
-    const reveal = (guess) => {
-        if (guess === topSongs[curGuess]) {
-            const newRevealed = [...revealed]
-            newRevealed[curGuess] = true;
-
-            setRevealed(newRevealed);
-            setCurGuess(curGuess + 1);
-            generateGuesses(curGuess + 1)
-        }
-    }
-
-    const showTopSongs = topSongs.map((song, idx) =>
-        revealed[idx] ? <li key={idx}>{song}</li> : <li key={idx}>???</li>
-    );
-
-    useEffect(() => {
-        reset();
-    }, [topSongs]);
-
-    useEffect(() => {
-        if (curSongs.length == 0 && topSongs.length > 0) {
-            generateGuesses(curGuess);
-        }
-    }, [curSongs, topSongs]);
 
     useEffect(() => {
         const token = window.localStorage.getItem("token");
@@ -182,27 +127,7 @@ export default function Home() {
                       </div>
                   }
                   {topSongs.length > 0 &&
-                      <div className={styles.grid}>
-                          <div className={styles.column}>
-                              <ol className={styles.topSongs}>
-                                  {showTopSongs}
-                              </ol>
-                          </div>
-                          <div className={styles.column}>
-                              {curGuess < topSongs.length &&
-                                  <h1>Guess Your {getNumber(curGuess)} Top Song</h1>
-                              }
-                              <div className={styles.grid}>
-                                  {
-                                      curSongs.map((song, i) =>
-                                          <div key={song + i} onClick={() => reveal(curSongs[i])} className={`${styles.card} ${styles.btn}`}>
-                                              <h2>{song}</h2>
-                                          </div>
-                                      )
-                                  }
-                              </div>
-                          </div>
-                      </div>
+                    <Game topSongs={topSongs} />
                   }
             </main>
       </div>

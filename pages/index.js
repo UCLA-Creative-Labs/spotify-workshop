@@ -85,7 +85,7 @@ export default function Home() {
     return (
         <div className={styles.container}>
             <main className={styles.main}>
-                <h1 className={styles.title}> Spotify Stats </h1>
+                <h1 className={styles.title}> Spotify Stats &#128187; </h1>
                   {loggedIn ?
                       <div className={`${styles.grid} ${styles.options}`}>
                           <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.SHORT_TERM)}>

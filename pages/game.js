@@ -23,7 +23,7 @@ export default function Game(props) {
   }, [topSongs]);
 
   useEffect(() => {
-    if (curSongs.length == 0 && topSongs.length > 0) {
+    if (curSongs.length == 0 && topSongs.length > 0 && curGuess == 0) {
         generateGuesses(curGuess);
     }
 }, [curSongs, topSongs]);

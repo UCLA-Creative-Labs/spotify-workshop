@@ -5,7 +5,8 @@ import querystring from 'querystring'
 import {generateChallenge} from '../utils/pkce';
 import Game from './game';
 
-const CLIENT_ID = '8887d21cdd694dacb146d301968d58ff';
+// TO DO: replace the client id with the client id for your project
+const CLIENT_ID = 'REPLACE WITH YOUR CLIENT ID';
 const CALLBACK_URL = 'http://localhost:3000';
 const SPOTIFY_CODE_VERIFIER = "spotify-code-verifier";
 const Duration = {
@@ -28,9 +29,7 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        const code = router.query.code;
-        if (!code) return;
-        setAuthCode(code);
+        // retrieve the authorization code from the query params on callback
     }, [router]);
 
     useEffect(() => {
@@ -46,13 +45,7 @@ export default function Home() {
         window.localStorage.setItem(SPOTIFY_CODE_VERIFIER, code_verifier);
         const authenticationUrl = 'https://accounts.spotify.com/authorize?' +
             querystring.stringify({
-                response_type: 'code',
-                client_id: CLIENT_ID,
-                scope: 'user-top-read',
-                redirect_uri: CALLBACK_URL,
-                show_dailog: true,
-                code_challenge_method: 'S256',
-                code_challenge
+                // TO DO: fill in the query params for the authorize /endpoint
             });
         void router.push(authenticationUrl);
     }
@@ -67,24 +60,18 @@ export default function Home() {
                 'Content-Type': 'application/x-www-form-urlencoded;',
             },
             body: querystring.stringify({
-                client_id: CLIENT_ID,
-                grant_type: 'authorization_code',
-                redirect_uri: CALLBACK_URL, // this url just needs to match the one used when getting the authorization token
-                code: authCode,
-                code_verifier,
+               // TO DO: fill in the parameters needed for the body of the POST /api/token request
             })
         });
 
         const body = await res.json();
-        setAccessToken(body.access_token);
+        // TO DO: save the access_token from the body
     }
 
     const fetchTopSongs = async (duration) => {
         const response = await window.fetch('https://api.spotify.com/v1/me/top/tracks?' +
             querystring.stringify({
-                limit: 50,
-                offset: 0,
-                time_range: duration
+              // TO DO: fill in the body parameters needed for the /top/tracks endpoint
             }), {
             method: 'GET',
             headers: {

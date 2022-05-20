@@ -6,16 +6,18 @@ export default function Game(props) {
   const [revealed, setRevealed] = useState([]);
   const [curGuess, setCurGuess] = useState(0);
   const [curSongs, setCurSongs] = useState([]);
+  const [totalGuesses, setTotalGuesses] = useState(0);
 
   const {topSongs} = props;
   const showTopSongs = topSongs.map((song, idx) =>
-    revealed[idx] ? <li key={idx}>{song}</li> : <li key={idx}>???</li>
+    revealed[idx] ? <li key={idx} className={styles.listItem}>{idx + 1}. {song}</li> : <li key={idx} className={styles.listItem}>{idx + 1}. ???</li>
   );
 
   const reset = () => {
     setRevealed([]);
     setCurGuess(0);
     setCurSongs([]);
+    setTotalGuesses(0);
   }
 
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function Game(props) {
   } 
 
   const reveal = (guess) => {
+    setTotalGuesses(totalGuesses + 1);
     if (guess === topSongs[curGuess]) {
         const newRevealed = [...revealed]
         newRevealed[curGuess] = true;
@@ -65,9 +68,9 @@ export default function Game(props) {
     topSongs.length > 0 &&
     <div className={styles.grid}>
         <div className={styles.column}>
-            <ol className={styles.topSongs}>
+            <ul className={styles.topSongs}>
                 {showTopSongs}
-            </ol>
+            </ul>
         </div>
         <div className={styles.column}>
             {curGuess < topSongs.length &&
@@ -82,6 +85,7 @@ export default function Game(props) {
                     )
                 }
             </div>
+            {totalGuesses > 0 && <h1>Correctness: {Math.round(curGuess / totalGuesses * 100)}&#x25;</h1>}
         </div>
     </div>
   )

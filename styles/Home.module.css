@@ -1,5 +1,7 @@
 .container {
   padding: 0 2rem;
+  background-color: black;
+  color: white;
 }
 
 .main {
@@ -42,6 +44,7 @@
   margin: 0;
   line-height: 1.15;
   font-size: 4rem;
+  color: #1DB954;
 }
 
 .title,
@@ -102,14 +105,29 @@
 .topSongs {
   text-align: left;
   max-height: 65vh;
-  overflow: scroll;
+  overflow-y: overlay;
+  /* overflow-x: hidden; */
+  /* background-color: #1DB954;  */
+  border: 2px solid #eaeaea;
+  border-radius: 10px;
+  padding: 5px; 
+}
+
+.listItem { 
+  display: block;
+  font-size: 1.17em;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  margin-left: 0.5em;
+  margin-right: 0;
+  font-weight: bold;
 }
 
 .card:hover,
 .card:focus,
 .card:active {
-  color: #0070f3;
-  border-color: #0070f3;
+  color: #1DB954;
+  border-color: #1DB954;
 }
 
 .card h2 {

@@ -8,22 +8,23 @@ import Game from './game';
 const CLIENT_ID = '8887d21cdd694dacb146d301968d58ff';
 const CALLBACK_URL = 'http://localhost:3000';
 const SPOTIFY_CODE_VERIFIER = "spotify-code-verifier";
+const Duration = {
+  SHORT_TERM: 'short_term',
+  MEDIUM_TERM: 'medium_term',
+  LONG_TERM: 'long_term'
+};
+Object.freeze(Duration);
 
 export default function Home() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [authCode, setAuthCode] = useState();
     const [accessToken, setAccessToken] = useState();
     const [topSongs, setTopSongs] = useState([]);
-
     const router = useRouter();
 
     useEffect(() => {
         const token = window.localStorage.getItem("token");
-        if (!token) {
-            setLoggedIn(false);
-        } else {
-            setLoggedIn(true);
-        }
+        setLoggedIn(!!token);
     }, []);
 
     useEffect(() => {
@@ -33,9 +34,7 @@ export default function Home() {
     }, [router]);
 
     useEffect(() => {
-        if (authCode) {
-            void getAccessToken();
-        }
+        if (authCode) void getAccessToken();
     }, [authCode]);
 
     useEffect(() => {
@@ -60,7 +59,6 @@ export default function Home() {
 
     const getAccessToken = async () => {
         const code_verifier = window.localStorage.getItem(SPOTIFY_CODE_VERIFIER);
-
         if (!code_verifier) return;
 
         const res = await window.fetch('https://accounts.spotify.com/api/token', {
@@ -80,13 +78,6 @@ export default function Home() {
         const body = await res.json();
         setAccessToken(body.access_token);
     }
-
-    const Duration = {
-        SHORT_TERM: 'short_term',
-        MEDIUM_TERM: 'medium_term',
-        LONG_TERM: 'long_term'
-    };
-    Object.freeze(Duration);
 
     const fetchTopSongs = async (duration) => {
         const response = await window.fetch('https://api.spotify.com/v1/me/top/tracks?' +
@@ -109,19 +100,18 @@ export default function Home() {
             <main className={styles.main}>
                 <h1 className={styles.title}> Spotify Stats </h1>
                   {loggedIn ?
-                      <>
-                          <div className={`${styles.grid} ${styles.options}`}>
-                              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.SHORT_TERM)}>
-                                  <h2>Last 4 Weeks</h2>
-                              </div>
-                              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.MEDIUM_TERM)}>
-                                  <h2>Last 6 months</h2>
-                              </div>
-                              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.LONG_TERM)}>
-                                  <h2>All Time</h2>
-                              </div>
+                      <div className={`${styles.grid} ${styles.options}`}>
+                          <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.SHORT_TERM)}>
+                              <h2>Last 4 Weeks</h2>
                           </div>
-                      </> :
+                          <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.MEDIUM_TERM)}>
+                              <h2>Last 6 months</h2>
+                          </div>
+                          <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.LONG_TERM)}>
+                              <h2>All Time</h2>
+                          </div>
+                      </div>
+                     :
                       <div className={`${styles.card} ${styles.btn} ${styles.options}`} onClick={login}>
                           <h2>Login with Spotify</h2>
                       </div>

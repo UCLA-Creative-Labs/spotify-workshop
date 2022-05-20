@@ -126,9 +126,7 @@ export default function Home() {
                           <h2>Login with Spotify</h2>
                       </div>
                   }
-                  {topSongs.length > 0 &&
-                    <Game topSongs={topSongs} />
-                  }
+                  <Game topSongs={topSongs} />
             </main>
       </div>
     )

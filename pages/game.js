@@ -62,6 +62,7 @@ export default function Game(props) {
   }
 
   return (
+    topSongs.length > 0 &&
     <div className={styles.grid}>
         <div className={styles.column}>
             <ol className={styles.topSongs}>

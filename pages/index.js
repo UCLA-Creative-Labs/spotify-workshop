@@ -163,7 +163,6 @@ export default function Home() {
 
     const body = await res.json();
     setAccessToken(body.access_token);
-    setRefreshToken(body.refresh_token);
   }
 
   const Duration = {

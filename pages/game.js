@@ -9,7 +9,7 @@ export default function Game(props) {
 
   const {topSongs} = props;
   const showTopSongs = topSongs.map((song, idx) =>
-    revealed[idx] ? <li key={idx}>{song}</li> : <li key={idx}>???</li>
+    revealed[idx] ? <li key={idx} className={styles.listItem}>{idx + 1}. {song}</li> : <li key={idx} className={styles.listItem}>{idx + 1}. ???</li>
   );
 
   const reset = () => {
@@ -65,9 +65,9 @@ export default function Game(props) {
     topSongs.length > 0 &&
     <div className={styles.grid}>
         <div className={styles.column}>
-            <ol className={styles.topSongs}>
+            <ul className={styles.topSongs}>
                 {showTopSongs}
-            </ol>
+            </ul>
         </div>
         <div className={styles.column}>
             {curGuess < topSongs.length &&

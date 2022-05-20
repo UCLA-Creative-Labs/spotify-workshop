@@ -147,6 +147,7 @@ export default function Home(props) {
         client_id: CLIENT_ID,
         scope: 'user-top-read',
         redirect_uri: CALLBACK_URL,
+        show_dailog: true,
         code_challenge_method: 'SHA256',
         code_challenge
       });
@@ -164,7 +165,7 @@ export default function Home(props) {
     const res = await window.fetch('https://api.spotify.com/v1/api/token', {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${authHeader}`,
+        // Authorization: `Basic ${authHeader}`,
         'Content-Type': 'application/x-www-form-urlencoded;',
       },
       body: querystring.stringify({
@@ -173,7 +174,6 @@ export default function Home(props) {
         redirect_uri: CALLBACK_URL, // this url just needs to match the one used when getting the authorization token
         code: authCode,
         code_verifier,
-        client_id: CLIENT_ID
       })
     });
 

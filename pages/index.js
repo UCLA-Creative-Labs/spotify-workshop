@@ -190,7 +190,7 @@ export default function Home() {
                           </div>
                           <div className={styles.column}>
                               {curGuess < topSongs.length &&
-                                  <h1>Choose Your {getNumber(curGuess)} Top Song</h1>
+                                  <h1>Guess Your {getNumber(curGuess)} Top Song</h1>
                               }
                               <div className={styles.grid}>
                                   {

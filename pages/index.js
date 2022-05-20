@@ -1,12 +1,11 @@
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import {useState, useEffect} from 'react'
-import {Router, useRouter} from 'next/router';
+import {useRouter} from 'next/router';
 import querystring from 'querystring'
 import {generateChallenge} from '../utils/pkce';
+import {getNumber, getRandomInt} from './utils.js'
 
 const CLIENT_ID = '8887d21cdd694dacb146d301968d58ff';
-
 const CALLBACK_URL = 'http://localhost:3000';
 const SPOTIFY_CODE_VERIFIER = "spotify-code-verifier";
 
@@ -20,13 +19,6 @@ export default function Home() {
     const [curSongs, setCurSongs] = useState([]);
 
     const router = useRouter();
-
-    const getRandomInt = (min, max) => {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min)
-    }
-
     const reset = () => {
         setRevealed([]);
         setCurGuess(0);
@@ -64,32 +56,11 @@ export default function Home() {
             setCurGuess(curGuess + 1);
             generateGuesses(curGuess + 1)
         }
-
     }
 
     const showTopSongs = topSongs.map((song, idx) =>
         revealed[idx] ? <li key={idx}>{song}</li> : <li key={idx}>???</li>
     );
-
-    const getNumber = () => {
-        const i = curGuess + 1;
-        var phrase = i.toString();
-        switch (phrase) {
-            case '1':
-                phrase += 'st';
-                break;
-            case '2':
-                phrase += 'nd';
-                break;
-            case '3':
-                phrase += 'rd';
-                break;
-            default:
-                phrase += 'th';
-                break;
-        }
-        return phrase;
-    }
 
     useEffect(() => {
         reset();
@@ -191,57 +162,49 @@ export default function Home() {
     return (
         <div className={styles.container}>
             <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Spotify Stats
-        </h1>
-
-                {loggedIn ?
-                    <>
-                        <div className={`${styles.grid} ${styles.options}`}>
-                            <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.SHORT_TERM)}>
-                                <h2>Last 4 Weeks</h2>
-
-                            </div>
-
-                            <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.MEDIUM_TERM)}>
-                                <h2>Last 6 months</h2>
-                            </div>
-
-                            <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.LONG_TERM)}>
-                                <h2>All Time</h2>
-                            </div>
-                        </div>
-                    </> :
-                    <div className={`${styles.card} ${styles.btn} ${styles.options}`} onClick={login}>
-                        <h2>Login with Spotify</h2>
-                    </div>
-                }
-
-                {/* Display songs */}
-                {topSongs.length > 0 &&
-                    <div className={styles.grid}>
-                        <div className={styles.column}>
-                            <ol className={styles.topSongs}>
-                                {showTopSongs}
-                            </ol>
-                        </div>
-                        <div className={styles.column}>
-                            {curGuess < topSongs.length &&
-                                <h1>Choose Your {getNumber()} Top Song</h1>
-                            }
-                            <div className={styles.grid}>
-                                {
-                                    curSongs.map((song, i) =>
-                                        <div key={song + i} onClick={() => reveal(curSongs[i])} className={`${styles.card} ${styles.btn}`}>
-                                            <h2>{song}</h2>
-                                        </div>
-                                    )
-                                }
-                            </div>
-                        </div>
-                    </div>
-                }
+                <h1 className={styles.title}> Spotify Stats </h1>
+                  {loggedIn ?
+                      <>
+                          <div className={`${styles.grid} ${styles.options}`}>
+                              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.SHORT_TERM)}>
+                                  <h2>Last 4 Weeks</h2>
+                              </div>
+                              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.MEDIUM_TERM)}>
+                                  <h2>Last 6 months</h2>
+                              </div>
+                              <div className={`${styles.card} ${styles.btn}`} onClick={() => fetchTopSongs(Duration.LONG_TERM)}>
+                                  <h2>All Time</h2>
+                              </div>
+                          </div>
+                      </> :
+                      <div className={`${styles.card} ${styles.btn} ${styles.options}`} onClick={login}>
+                          <h2>Login with Spotify</h2>
+                      </div>
+                  }
+                  {topSongs.length > 0 &&
+                      <div className={styles.grid}>
+                          <div className={styles.column}>
+                              <ol className={styles.topSongs}>
+                                  {showTopSongs}
+                              </ol>
+                          </div>
+                          <div className={styles.column}>
+                              {curGuess < topSongs.length &&
+                                  <h1>Choose Your {getNumber(curGuess)} Top Song</h1>
+                              }
+                              <div className={styles.grid}>
+                                  {
+                                      curSongs.map((song, i) =>
+                                          <div key={song + i} onClick={() => reveal(curSongs[i])} className={`${styles.card} ${styles.btn}`}>
+                                              <h2>{song}</h2>
+                                          </div>
+                                      )
+                                  }
+                              </div>
+                          </div>
+                      </div>
+                  }
             </main>
-        </div>
+      </div>
     )
 }

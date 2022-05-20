@@ -220,40 +220,27 @@ export default function Home() {
 
         {/* Display songs */}
         {topSongs.length > 0 &&
-          <>
-            <list>
+          <div className={styles.grid}>
+            <ol className={styles.column}>
               {showTopSongs}
-            </list>
-
-            {curGuess < topSongs.length &&
-              <h1>Choose Your {getNumber()} Top Song</h1>
-            }
-            <div className={styles.grid}>
-
-              {
+            </ol>
+            <div className={styles.column}>
+              {curGuess < topSongs.length &&
+                <h1>Choose Your {getNumber()} Top Song</h1>
+              }
+              <div className={styles.grid}>
+                {
                 curSongs.map((song, i) =>
                   <div key={song + i} onClick={() => reveal(curSongs[i])} className={`${styles.card} ${styles.btn}`}>
                     <h2>{song}</h2>
                   </div>
-                )
-              }
-            </div>
-          </>
+                  )
+                }
+              </div>
+            </div> 
+          </div>
         }
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }

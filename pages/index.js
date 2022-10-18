@@ -50,7 +50,7 @@ export default function Home() {
                 client_id: CLIENT_ID,
                 scope: 'user-top-read',
                 redirect_uri: CALLBACK_URL,
-                show_dailog: true,
+                show_dialog: true,
                 code_challenge_method: 'S256',
                 code_challenge
             });
